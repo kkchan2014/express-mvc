@@ -1,0 +1,31 @@
+{
+  "name": "node-exp-mvc",
+  "version": "1.0.0",
+  "description": "node.js express mvc framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kkchan (694643393@qq.com)",
+  "license": "ISC",
+  "engines": {
+    "node": "10.x.x"
+  },
+  "repository": {
+		"type": "git",
+		"url": "https://github.com/kkchan2014/express-mvc.git"
+	},
+  "dependencies": {
+    "node-type-extensions": "latest",
+    "domain": "latest",
+    "express": "latest",
+    "fs": "latest",
+    "node-art-template": "latest",
+    "extend": "latest",
+    "path": "latest",
+    "svg-captcha": "latest",
+    "node-xlsx": "latest",
+    "node-uuid": "latest",
+    "node-fs2": "latest"
+  }
+}
