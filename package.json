@@ -1,6 +1,6 @@
 {
   "name": "node-exp-mvc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "node.js express mvc framework",
   "main": "index.js",
   "scripts": {
@@ -19,6 +19,7 @@
     "node-type-extensions": "latest",
     "domain": "latest",
     "express": "latest",
+    "express-session": "latest",
     "fs": "latest",
     "node-art-template": "latest",
     "extend": "latest",
