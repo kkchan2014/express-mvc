@@ -87,7 +87,7 @@ module.exports = {
     createActionPath: (params) => {
         return path.resolve(params.areaPath, 'controllers', params._controller, params._action + '.js');
     },
-    createEvents: (req, rsp, options, params) => {
-        return extend(new eventsClass(req, rsp, options, params), actions);
+    createEvents: (req, rsp, options, params, _ex) => {
+        return extend(new eventsClass(req, rsp, options, params), actions, _ex);
     }
 };

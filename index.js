@@ -23,6 +23,9 @@ class nodeExpressMVC {
         this.extends = {};
         this.app = express();
         this.engine('html', node_template(options.resources, enableViewCache === true));
+        this.use(express.urlencoded({
+            extended: false
+        }));
 
         if (this.options.headers) {
             this.app.all('*', (req, rsp, next) => {
@@ -40,25 +43,21 @@ class nodeExpressMVC {
     }
 
     use(fn, _2) {
-        if (typeof fn === 'function') {
+        if (Object.isFunction(fn)) {
             switch (fn.length) {
-                case 3://(req, rsp, next)
+                case 3: //(req, rsp, next)
                     this.app.use(fn);
                     break;
-                case 2://(e, next)
+                case 2: //(e, next)
                     this.handlers.push(fn);
                     break;
                 default:
                     fn.apply(this);
                     break;
             }
-        } else if (typeof fn === 'string') {
-            if (typeof _2 === 'function') {
-                try {
-                    this.extends[fn] = _2;
-                } catch {
-                    this.extends[fn] = _2;
-                }
+        } else if (Object.isString(fn)) {
+            if (Object.isFunction(_2)) {
+                this.extends[fn] = _2;
             } else {
                 this.app.all(fn, (req, rsp) => this.do(req, rsp, _2));
             }
@@ -71,7 +70,7 @@ class nodeExpressMVC {
 
     static(_1) {
         Object.extract(_1, (k, v) => {
-            v && this.app.use(express.static(v));
+            k && v && this.app.use(k, express.static(v, { redirect: false }));
         });
     }
 
@@ -83,14 +82,16 @@ class nodeExpressMVC {
         this.app.listen(port, cb);
     }
 
-    catch() {
+    catch (handle) {
         this.use((req, rsp, next) => {
             var d = domain.create();
             d.add(req);
             d.add(rsp);
             d.run(next);
             d.on('error', (err) => {
-                this.status(500, err.stack);
+                if(Object.isFunction(handle) || handle(req, rsp, err) !== true) {
+                    this.status(500, err.stack);
+                }
             });
         });
     }
@@ -100,15 +101,14 @@ class nodeExpressMVC {
         var actionPath = helper.createActionPath(params);
 
         fs.exists(actionPath, exists => {
-            var e = helper.createEvents(req, rsp, this.options, params);
+            var e = helper.createEvents(req, rsp, this.options, params, { pages: this.pages });
 
             if (exists) {
-                var action = require(actionPath);
-                var index = 0;
+                var action = require(actionPath), i = 0;
                 var exec = () => {
-                    var next = this.handlers[index++] || action;
+                    var next = this.handlers[i++] || action;
 
-                    next && next(e, next === action ? (() => { }) : exec);
+                    next && next(e, next === action ? (() => {}) : exec);
                 }
 
                 this._extend(e, this.extends);
@@ -122,14 +122,8 @@ class nodeExpressMVC {
 
     _extend(target, ex) {
         Object.extract(ex, (k, v) => {
-            var arr = k.split('.');
-
-            if (arr.length == 2) {
-                target[arr[0]] && (target[arr[0]][arr[1]] = v);
-            } else {
-                target[k] = v;
-            }
-        });
+            k.length === 2 ? (target[k[0]] && (target[k[0]][k[1]] = v)) : (target[k[0]] = v);
+        }, k => k.split('.'));
     }
 }
 

@@ -6,7 +6,6 @@
 'use strict'
 
 const template = require('art-template');
-const extend = require('extend');
 const path = require('path');
 const VIEW_EXT = '.html';
 
@@ -29,7 +28,7 @@ var _createViewFileName = (file, params) => {
 };
 var s1 = {
     view: function (file, model, out2String) {
-        if (typeof file === 'object') {
+        if (Object.isObject(file)) {
             if (model === true || model === false) {
                 out2String = model;
             }
@@ -163,12 +162,10 @@ var s2 = {
     renderBuffer: function (buffer, filename, ext) {
         return this._render(s1.buffer(buffer, filename, ext));
     },
-    status: function (code, _2) {
-        if (_2 && typeof _2 !== 'string') {
-            this._render(s1.page(_2));
-        } else {
-            this._render(s1.content(_2 || `${code}`, code));
-        }
+    status: function (code, msg) {
+        var page = this.pages && this.pages[code.toString()];
+
+        page ? this._render(s1.page(page)) : this._render(s1.content(msg || `${code}`, code));
     }
 };
 
